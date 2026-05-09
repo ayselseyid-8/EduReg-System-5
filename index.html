@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduReg System</title>
+    <style>
+        /* Mövcud üslublar toxunulmaz qaldı */
+        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background-color: #f0f4f8; 
+            color: #2d3436; 
+            transition: background-color 0.5s ease; 
+        }
+        
+        header { background: #2c3e50; color: white; padding: 40px; text-align: center; position: relative; }
+        header h1 { font-size: 2.2rem; }
+        
+        .theme-container {
+            position: absolute;
+            right: 20px;
+            bottom: 12px;
+        }
+        .theme-container select { 
+            padding: 8px 12px; 
+            border-radius: 8px; 
+            border: 2px solid white; 
+            background: #34495e; 
+            color: #ffffff; 
+            font-weight: bold;
+            cursor: pointer;
+            outline: none;
+        }
+
+        nav { background: #34495e; padding: 12px 0; position: sticky; top: 0; z-index: 100; }
+        nav ul { display: flex; justify-content: center; list-style: none; gap: 25px; }
+        nav ul li a { color: #ecf0f1; text-decoration: none; font-weight: bold; font-size: 0.95rem; }
+
+        main { max-width: 800px; margin: 30px auto; padding: 0 20px; }
+        section { 
+            background: white; 
+            margin-bottom: 25px; 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05); 
+        }
+
+        h2 { color: #2c3e50; margin-bottom: 20px; border-left: 5px solid #2c3e50; padding-left: 12px; }
+
+        .form-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.9rem; }
+        input { width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 8px; outline: none; }
+        
+        .course-list { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+            margin: 20px 0; 
+        }
+        .course-item { 
+            background: #f8f9fa; 
+            padding: 14px; 
+            border-radius: 8px; 
+            border: 1px solid #e9ecef;
+            font-size: 0.9rem; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .course-item:hover {
+            border-color: #2c3e50;
+            background: #ffffff;
+        }
+        .course-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .primary-btn { 
+            background: #2c3e50; color: white; padding: 12px; border: none; 
+            border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px;
+            transition: 0.3s; font-size: 1rem;
+        }
+        .primary-btn:hover { background: #1a252f; }
+
+        .error-msg { color: #ff4757; font-size: 0.8rem; font-weight: bold; margin-top: 6px; display: none; }
+
+        #login-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(44, 62, 80, 0.96); display: flex; justify-content: center; align-items: center; z-index: 2000;
+        }
+        .login-box { background: white; padding: 40px; border-radius: 15px; text-align: center; width: 400px; }
+        .modal-btns { display: flex; gap: 12px; margin-top: 25px; }
+        .btn-yes { background: #1dd1a1; flex: 1; }
+        .btn-no { background: #ff6b6b; flex: 1; }
+
+        /* Yeni əlavə edilən siyahı üslubu */
+        #enrolled-list-section { display: none; background: #ffffff; border-top: 5px solid #1dd1a1; }
+        .student-card { background: #f1f2f6; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
+
+        footer { text-align: center; padding: 30px; color: #7f8c8d; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+
+    <div id="login-modal">
+        <div class="login-box">
+            <h3 id="modal-title" style="color: #2c3e50;">Dil Seçimi / Language</h3>
+            <p id="modal-text" style="margin: 15px 0; color: #666;">Səhifə Azərbaycan dilinə tərcümə edilsinmi?</p>
+            <div class="modal-btns">
+                <button class="primary-btn btn-yes" onclick="closeModal(true)">Bəli</button>
+                <button class="primary-btn btn-no" onclick="closeModal(false)">Xeyr</button>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <h1 id="brand-name">EduReg System</h1>
+        <div class="theme-container">
+            <select id="theme-switch">
+                <option value="#f0f4f8" id="opt-default">Default Blue</option>
+                <option value="#e3f2fd" id="opt-sky">Light Sky</option>
+                <option value="#e0f2f1" id="opt-mint">Light Mint</option>
+            </select>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#home" id="nav-home">Home</a></li>
+            <li><a href="#students" id="nav-courses">Courses</a></li>
+            <li><a href="#registration" id="nav-register">Register</a></li>
+            <li><a href="#contact" id="nav-contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="home">
+            <h2 id="h-welcome">Welcome</h2>
+            <p id="welcome-text" style="color: #2c3e50; font-weight: 500; font-size: 1.1rem;">Your gateway to academic excellence</p>
+        </section>
+
+        <section id="students">
+            <h2 id="h-modules">Available Modules</h2>
+            <div id="course-container" class="course-list"></div>
+            <button class="primary-btn" id="btn-course-confirm" onclick="location.href='#registration'">Select and Continue</button>
+        </section>
+
+        <section id="registration">
+            <h2 id="h-security">Security Portal</h2>
+            <form id="submission-form">
+                <div class="form-group">
+                    <label id="lbl-name">Full Name:</label>
+                    <input type="text" id="full-name-input" placeholder="Enter name...">
+                </div>
+                <div class="form-group">
+                    <label id="lbl-pass">Account Password:</label>
+                    <input type="password" id="password-field" placeholder="Min. 8 characters">
+                    <p id="password-warning" class="error-msg">⚠ Password is too short!</p>
+                </div>
+                <button type="submit" id="btn-submit" class="primary-btn">Complete Registration</button>
+            </form>
+        </section>
+
+        <section id="enrolled-list-section">
+            <h2 id="h-enrolled-title">Registered Students</h2>
+            <div id="students-display"></div>
+        </section>
+
+        <section id="contact">
+            <h2 id="h-contact">Contact Support</h2>
+            <p id="p-email"><strong>Email:</strong> info.edureg@gmail.com</p>
+            <p id="p-phone"><strong>Phone:</strong> +994 50 123 45 67</p>
+        </section>
+    </main>
+
+    <footer><p>&copy; 2026 EduReg Academic Portal.</p></footer>
+
+    <script>
+        const themeSwitch = document.getElementById('theme-switch');
+        const courseContainer = document.getElementById('course-container');
+        const fullNameInput = document.getElementById('full-name-input');
+        const passwordField = document.getElementById('password-field');
+        const passwordWarning = document.getElementById('password-warning');
+        const loginModal = document.getElementById('login-modal');
+        const enrolledSection = document.getElementById('enrolled-list-section');
+        const studentsDisplay = document.getElementById('students-display');
+
+        let courses = ["Web Development", "Database Systems", "Cyber Security", "UI/UX Design", "Cloud Computing", "AI Fundamentals"];
+        let isAz = false;
+
+        const loadCourses = (courseList) => {
+            courseContainer.innerHTML = "";
+            courseList.forEach(course => {
+                const div = document.createElement('label');
+                div.className = 'course-item';
+                div.innerHTML = `<input type="checkbox" class="course-check" value="${course}"> <span>${course}</span>`;
+                courseContainer.appendChild(div);
+            });
+        };
+
+        const closeModal = (translate) => {
+            if (translate) {
+                isAz = true;
+                document.getElementById('nav-home').textContent = "Ana Səhifə";
+                document.getElementById('nav-courses').textContent = "Kurslar";
+                document.getElementById('nav-register').textContent = "Qeydiyyat";
+                document.getElementById('nav-contact').textContent = "Əlaqə";
+                document.getElementById('h-welcome').textContent = "Xoş Gəldiniz";
+                document.getElementById('welcome-text').textContent = "Akademik mükəmməlliyə gedən yolunuz";
+                document.getElementById('h-modules').textContent = "Mövcud Modullar";
+                document.getElementById('btn-course-confirm').textContent = "Seç və Davam Et";
+                document.getElementById('h-security').textContent = "Təhlükəsizlik Portalı";
+                document.getElementById('lbl-name').textContent = "Tam Adınız:";
+                document.getElementById('full-name-input').placeholder = "Adınızı daxil edin...";
+                document.getElementById('lbl-pass').textContent = "Hesab Şifrəsi:";
+                document.getElementById('password-field').placeholder = "Min. 8 simvol";
+                document.getElementById('password-warning').textContent = "⚠ Şifrə çox qısadır! Ən az 8 simvol olmalıdır.";
+                document.getElementById('btn-submit').textContent = "Qeydiyyatı Tamamla";
+                document.getElementById('h-contact').textContent = "Dəstək və Əlaqə";
+                document.getElementById('h-enrolled-title').textContent = "Qeydiyyatdan Keçənlər";
+                document.getElementById('opt-default').textContent = "Standart Göy";
+                document.getElementById('opt-sky').textContent = "Açıq Səma";
+                document.getElementById('opt-mint').textContent = "Açıq Nanə";
+                courses = ["Veb Proqramlaşdırma", "Verilənlər Bazası", "Kiber Təhlükəsizlik", "UI/UX Dizayn", "Bulud Hesablamaları", "Süni İntellekt"];
+                loadCourses(courses);
+            }
+            loginModal.style.display = 'none';
+        };
+
+        themeSwitch.addEventListener('change', (e) => {
+            document.body.style.backgroundColor = e.target.value;
+        });
+
+        document.getElementById('submission-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const selectedCourses = document.querySelectorAll('.course-check:checked');
+            
+            if (fullNameInput.value.trim() === "") {
+                alert(isAz ? "Adınızı daxil edin." : "Please enter your name.");
+            } else if (passwordField.value.length < 8) {
+                passwordWarning.style.display = 'block';
+            } else if (selectedCourses.length === 0) {
+                alert(isAz ? "Kurs seçin." : "Please select a course.");
+            } else {
+                passwordWarning.style.display = 'none';
+                alert(isAz ? "Uğurlu!" : "Success!");
+                
+                // --- Siyahı Göstərmə Məntiqi ---
+                enrolledSection.style.display = 'block';
+                const courseNames = Array.from(selectedCourses).map(cb => cb.value).join(", ");
+                
+                // Mövcud siyahıya yeni tələbə əlavə edirik (Simulyasiya)
+                const newStudent = document.createElement('div');
+                newStudent.className = 'student-card';
+                newStudent.innerHTML = `<strong>${fullNameInput.value}</strong> - ${courseNames}`;
+                studentsDisplay.prepend(newStudent);
+                
+                // Səhifəni avtomatik siyahıya sürüşdür
+                location.href = "#enrolled-list-section";
+            }
+        });
+
+        window.onload = () => loadCourses(courses);
+    </script>
+</body>
+</html>

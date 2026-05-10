@@ -198,7 +198,8 @@
             courseList.forEach(course => {
                 const div = document.createElement('label');
                 div.className = 'course-item';
-                div.innerHTML = `<input type="checkbox" class="course-check" value="${course}"> <span>${course}</span>`;
+                div.innerHTML = `<input type="checkbox" class="course-check"
+                value="${course}"> <span>${course}</span>`;
                 courseContainer.appendChild(div);
             });
         };

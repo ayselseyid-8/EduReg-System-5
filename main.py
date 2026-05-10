@@ -65,10 +65,4 @@ if __name__ == "__main__":
     
     # Nəticəni göstəririk (GET/Read Simulyasiyası)
     show_students()
-    import os
 
-# ... digər kodlar ...
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host='0.0.0.0', port=port)
